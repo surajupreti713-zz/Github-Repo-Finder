@@ -13,7 +13,7 @@ The following **required** functionality is completed:
 
 The following **additional** features are implemented:
 
-- [http://i.imgur.com/DnsRV7W.gif] List anything else that you can get done to improve the app functionality!
+- [√] Improved the UI of the app
 
 
 ## Video Walkthrough
