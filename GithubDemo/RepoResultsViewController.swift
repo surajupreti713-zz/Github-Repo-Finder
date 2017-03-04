@@ -10,7 +10,7 @@ import UIKit
 import MBProgressHUD
 
 // Main ViewController
-class RepoResultsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class RepoResultsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SettingsPresentingViewControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
        
@@ -54,9 +54,36 @@ class RepoResultsViewController: UIViewController, UITableViewDataSource, UITabl
         return cell;
     }
     
+    
+    
+    
+    
+    //segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navigationController = segue.destination as! UINavigationController
+        let vc = navigationController.topViewController as! SearchSettingsViewController
+        vc.setting = searchSettings
+        vc.delegate = self
+    }
+    
+    func didSaveSettings(settings: GithubRepoSearchSettings) {
+        searchSettings = settings
+        self.tableView.reloadData()
+        doSearch()
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func didCancelSettings() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    
+    
+    
+    
     // Perform the search.
     fileprivate func doSearch() {
-
         MBProgressHUD.showAdded(to: self.view, animated: true)
 
         // Perform request to GitHub API to get the list of repositories
@@ -64,9 +91,12 @@ class RepoResultsViewController: UIViewController, UITableViewDataSource, UITabl
 
             // Print the returned repositories to the output window
             for repo in newRepos {
-                print(repo)
+                //print(repo.stars)
+                if repo.stars! >= self.searchSettings.minStars {
+                    self.repos = newRepos
+                }
             }   
-            self.repos = newRepos
+            //self.repos = newRepos
             self.tableView.reloadData()
             MBProgressHUD.hide(for: self.view, animated: true)
             }, error: { (error) -> Void in
@@ -74,6 +104,7 @@ class RepoResultsViewController: UIViewController, UITableViewDataSource, UITabl
         })
     }
 }
+
 
 // SearchBar methods
 extension RepoResultsViewController: UISearchBarDelegate {
